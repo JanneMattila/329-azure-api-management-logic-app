@@ -106,7 +106,7 @@
                   {
                     "equals": [
                       "@triggerBody()?['address']?['postalCode']",
-                      "@string('12345')"
+                      "12345"
                     ]
                   }
                 ]
