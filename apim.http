@@ -1,0 +1,23 @@
+@apim = https://[yourapiminstance].azure-api.net
+
+### Invalid user
+POST {{apim}}/user HTTP/1.1
+
+{
+  "id": 1,
+  "name": "Doe",
+  "address": {
+    "postalCode": "11111"
+  }
+}
+
+### Valid user
+POST {{apim}}/user HTTP/1.1
+
+{
+  "id": 1,
+  "name": "Doe",
+  "address": {
+    "postalCode": "12345"
+  }
+}
