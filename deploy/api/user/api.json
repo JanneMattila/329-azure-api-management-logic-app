@@ -30,6 +30,8 @@
   "variables": {
     "apiName": "user",
     "apiPath": "user",
+    "logicAppKeyName": "user-logic-app-sig",
+    "logicAppBackendName": "logicAppBackend",
 
     "apiResourceName": "[concat(parameters('apimName'), '/', variables('apiName'))]",
     "apiResourceId": "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimName'), variables('apiName'))]",
@@ -55,18 +57,40 @@
       }
     },
     {
+      "name": "[concat(parameters('apimName'), '/', variables('logicAppKeyName'))]",
+      "type": "Microsoft.ApiManagement/service/properties",
+      "apiVersion": "2019-01-01",
+      "properties": {
+        "secret": true,
+        "displayName": "[variables('logicAppKeyName')]",
+        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.sig.value]"
+      }
+    },
+    {
       "name": "[variables('apiResourceName')]",
       "type": "Microsoft.ApiManagement/service/apis",
       "apiVersion": "2019-01-01",
       "properties": {
         "displayName": "User",
         "description": "User validation service",
-        "serviceUrl": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.url.value]",
         "path": "[variables('apiPath')]",
         "subscriptionRequired": false,
         "protocols": [
           "https"
         ]
+      },
+      "dependsOn": [
+        "logicAppTemplate"
+      ]
+    },
+    {
+      "name": "[concat(parameters('apimName'), '/', variables('logicAppBackendName'))]",
+      "type": "Microsoft.ApiManagement/service/backends",
+      "apiVersion": "2019-01-01",
+      "properties": {
+        "resourceId": "[concat('https://management.azure.com',reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.logicApp.value)]",
+        "url": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.endpoint.value]",
+        "protocol": "http"
       },
       "dependsOn": [
         "logicAppTemplate"
@@ -108,7 +132,9 @@
             "format": "rawxml-link"
           },
           "dependsOn": [
-            "[variables('apiGetResourceId')]"
+            "[variables('apiGetResourceId')]",
+            "[resourceId('Microsoft.ApiManagement/service/properties', parameters('apimName'), variables('logicAppKeyName'))]",
+            "[resourceId('Microsoft.ApiManagement/service/backends', parameters('apimName'), variables('logicAppBackendName'))]"
           ]
         }
       ],

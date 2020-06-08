@@ -123,9 +123,17 @@
     }
   ],
   "outputs": {
-    "url": {
+    "logicApp": {
       "type": "string",
-      "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '/triggers/manual'), '2019-05-01').value]"
+      "value": "[resourceId('Microsoft.Logic/workflows', 'web-handler')]"
+    },
+    "sig": {
+      "type": "string",
+      "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '/triggers/manual'), '2019-05-01').queries.sig]"
+    },
+    "endpoint": {
+      "type": "string",
+      "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '/triggers/manual'), '2019-05-01').basePath]"
     }
   }
 }
