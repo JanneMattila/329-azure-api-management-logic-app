@@ -130,7 +130,7 @@
           "type": "policies",
           "apiVersion": "2019-01-01",
           "properties": {
-            "value": "[concat(parameters('templateUrl'), 'api/users/api-get.xml', parameters('templateToken'))]",
+            "value": "[concat(parameters('templateUrl'), 'api/users/api-post.xml', parameters('templateToken'))]",
             "format": "rawxml-link"
           },
           "dependsOn": [

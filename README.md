@@ -24,13 +24,13 @@ That folder has following files:
 
 ```cmd
 api.json
-api-get.xml
+api-post.xml
 logicapp.json
 ```
 
 `api.json` is ARM template of the users API.
 
-`api-get.xml` is APIM policy for GET method.
+`api-post.xml` is APIM policy for POST method.
 
 `logicapp.json` is ARM template for the backend API implemented as Logic App.
 
