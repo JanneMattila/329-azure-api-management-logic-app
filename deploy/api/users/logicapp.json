@@ -133,7 +133,18 @@
     },
     "endpoint": {
       "type": "string",
-      "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '/triggers/manual'), '2019-05-01').basePath]"
+      "value": "[concat(reference(resourceId('Microsoft.Logic/workflows', 'web-handler')).accessEndpoint, '/triggers')]"
+    },
+    // To debug these good output values to 
+    // check in resource group deployment history 
+    // at the Azure Portal
+    "fullLogicAppObject": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Logic/workflows', 'web-handler'), '2019-05-01', 'Full')]"
+    },
+    "fullListCallbackURLObject": {
+      "type": "object",
+      "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '/triggers/manual'), '2019-05-01')]"
     }
   }
 }

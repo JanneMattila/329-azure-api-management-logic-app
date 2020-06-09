@@ -104,7 +104,7 @@ $apimGateway = $result.Outputs.apimGateway.value
 Write-Host "##vso[task.setvariable variable=Custom.APIMGateway;]$apimGateway"
 
 Write-Host "Validating that our *MANDATORY* API is up and running..."
-$webAppUri = "$apimGateway/user"
+$webAppUri = "$apimGateway/users"
 $data = @{
     id      = 1
     name    = "Doe"

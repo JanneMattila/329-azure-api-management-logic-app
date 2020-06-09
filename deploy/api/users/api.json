@@ -88,6 +88,7 @@
       "type": "Microsoft.ApiManagement/service/backends",
       "apiVersion": "2019-01-01",
       "properties": {
+        "description": "web-handler",
         "resourceId": "[concat('https://management.azure.com',reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.logicApp.value)]",
         "url": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.endpoint.value]",
         "protocol": "http"
