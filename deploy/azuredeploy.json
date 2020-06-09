@@ -75,13 +75,13 @@
       ]
     },
     {
-      "name": "apiUserTemplate",
+      "name": "apiUsersTemplate",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-10-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('templateUrl'), 'api/user/api.json', parameters('templateToken'))]"
+          "uri": "[concat(parameters('templateUrl'), 'api/users/api.json', parameters('templateToken'))]"
         },
         "parameters": {
           "apimName": {

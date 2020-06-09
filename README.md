@@ -7,12 +7,12 @@ This ARM template implementation follows **feature** folder structure
 meaning that each API has it's own folder and all resources
 related to that API in that folder. 
 
-E.g. All content of api _user_ is in `api/user` folder:
+E.g. All content of api _users_ is in `api/users` folder:
 
 ```cmd
 .
 ├───api
-│   └───user
+│   └───users
 └───policies
 ```
 
@@ -24,7 +24,7 @@ api-get.xml
 logicapp.json
 ```
 
-`api.json` is ARM template of the user API.
+`api.json` is ARM template of the users API.
 
 `api-get.xml` is APIM policy for GET method.
 
