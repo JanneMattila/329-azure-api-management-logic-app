@@ -31,7 +31,7 @@
     "apiName": "users",
     "apiPath": "users",
     "logicAppKeyName": "users-logic-app-sig",
-    "logicAppBackendName": "logicAppBackend",
+    "logicAppBackendName": "usersLogicAppBackend",
 
     "apiResourceName": "[concat(parameters('apimName'), '/', variables('apiName'))]",
     "apiResourceId": "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimName'), variables('apiName'))]",
@@ -88,7 +88,7 @@
       "type": "Microsoft.ApiManagement/service/backends",
       "apiVersion": "2019-01-01",
       "properties": {
-        "description": "web-handler",
+        "description": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.name.value]",
         "resourceId": "[concat('https://management.azure.com',reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.logicApp.value)]",
         "url": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.endpoint.value]",
         "protocol": "http"

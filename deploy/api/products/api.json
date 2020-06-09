@@ -28,16 +28,15 @@
     }
   },
   "variables": {
-    "apiName": "user",
-    "apiPath": "user",
-    "logicAppKeyName": "user-logic-app-sig",
-    "logicAppBackendName": "logicAppBackend",
+    "apiName": "products",
+    "apiPath": "products",
+    "logicAppKeyName": "products-logic-app-sig",
+    "logicAppBackendName": "productsLogicAppBackend",
 
     "apiResourceName": "[concat(parameters('apimName'), '/', variables('apiName'))]",
-    "apiResourceId": "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimName'), variables('apiName'))]",
 
-    "apiGetResourceName": "[concat(variables('apiResourceName'), '/get')]",
-    "apiGetResourceId": "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apimName'), variables('apiName'), 'get')]"
+    "apiGetResourceId": "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apimName'), variables('apiName'), 'get')]",
+    "apiGetResourcePolicyName": "[concat(parameters('apimName'), '/', variables('apiName'), '/get/policy')]"
   },
   "resources": [
     {
@@ -47,7 +46,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('templateUrl'), 'api/user/logicapp.json', parameters('templateToken'))]"
+          "uri": "[concat(parameters('templateUrl'), 'api/products/logicapp.json', parameters('templateToken'))]"
         },
         "parameters": {
           "location": {
@@ -71,13 +70,16 @@
       "type": "Microsoft.ApiManagement/service/apis",
       "apiVersion": "2019-01-01",
       "properties": {
-        "displayName": "User",
-        "description": "User validation service",
+        "displayName": "Products",
+        "description": "Products API - Product validation service",
         "path": "[variables('apiPath')]",
         "subscriptionRequired": false,
         "protocols": [
           "https"
-        ]
+        ],
+        "value": "[concat(parameters('templateUrl'), 'api/products/products.yaml', parameters('templateToken'))]",
+        "format": "openapi-link",
+        "apiType": "http"
       },
       "dependsOn": [
         "logicAppTemplate"
@@ -88,6 +90,7 @@
       "type": "Microsoft.ApiManagement/service/backends",
       "apiVersion": "2019-01-01",
       "properties": {
+        "description": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.name.value]",
         "resourceId": "[concat('https://management.azure.com',reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.logicApp.value)]",
         "url": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.endpoint.value]",
         "protocol": "http"
@@ -97,49 +100,17 @@
       ]
     },
     {
-      "name": "[variables('apiGetResourceName')]",
-      "type": "Microsoft.ApiManagement/service/apis/operations",
-      "apiVersion": "2018-01-01",
+      "name": "[variables('apiGetResourcePolicyName')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+      "apiVersion": "2019-01-01",
       "properties": {
-        "displayName": "Validate user",
-        "method": "POST",
-        "urlTemplate": "/",
-        "templateParameters": [
-        ],
-        "description": "Validates user",
-        "responses": [
-          {
-            "statusCode": 200,
-            "description": "OK",
-            "headers": [
-            ],
-            "representations": [
-              {
-                "contentType": "application/json",
-                "sample": "{\r\n    \"summary\": \"User validated succesfully\"\r\n}"
-              }
-            ]
-          }
-        ]
+        "value": "[concat(parameters('templateUrl'), 'api/products/api-get.xml', parameters('templateToken'))]",
+        "format": "rawxml-link"
       },
-      "resources": [
-        {
-          "name": "policy",
-          "type": "policies",
-          "apiVersion": "2019-01-01",
-          "properties": {
-            "value": "[concat(parameters('templateUrl'), 'api/user/api-get.xml', parameters('templateToken'))]",
-            "format": "rawxml-link"
-          },
-          "dependsOn": [
-            "[variables('apiGetResourceId')]",
-            "[resourceId('Microsoft.ApiManagement/service/properties', parameters('apimName'), variables('logicAppKeyName'))]",
-            "[resourceId('Microsoft.ApiManagement/service/backends', parameters('apimName'), variables('logicAppBackendName'))]"
-          ]
-        }
-      ],
       "dependsOn": [
-        "[variables('apiResourceId')]"
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimName'), variables('apiName'))]",
+        "[resourceId('Microsoft.ApiManagement/service/properties', parameters('apimName'), variables('logicAppKeyName'))]",
+        "[resourceId('Microsoft.ApiManagement/service/backends', parameters('apimName'), variables('logicAppBackendName'))]"
       ]
     }
   ]

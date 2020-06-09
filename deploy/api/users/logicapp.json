@@ -10,11 +10,11 @@
     }
   },
   "variables": {
-    "logicAppName": "web-handler"
+    "logicAppName": "users-handler"
   },
   "resources": [
     {
-      "name": "web-handler",
+      "name": "[variables('logicAppName')]",
       "type": "Microsoft.Logic/workflows",
       "apiVersion": "2019-05-01",
       "location": "[parameters('location')]",
@@ -123,9 +123,13 @@
     }
   ],
   "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[variables('logicAppName')]"
+    },
     "logicApp": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Logic/workflows', 'web-handler')]"
+      "value": "[resourceId('Microsoft.Logic/workflows', variables('logicAppName'))]"
     },
     "sig": {
       "type": "string",
@@ -133,14 +137,14 @@
     },
     "endpoint": {
       "type": "string",
-      "value": "[concat(reference(resourceId('Microsoft.Logic/workflows', 'web-handler')).accessEndpoint, '/triggers')]"
+      "value": "[concat(reference(resourceId('Microsoft.Logic/workflows', variables('logicAppName'))).accessEndpoint, '/triggers')]"
     },
     // To debug these good output values to 
     // check in resource group deployment history 
     // at the Azure Portal
     "fullLogicAppObject": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Logic/workflows', 'web-handler'), '2019-05-01', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '2019-05-01', 'Full')]"
     },
     "fullListCallbackURLObject": {
       "type": "object",

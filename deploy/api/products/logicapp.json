@@ -10,11 +10,11 @@
     }
   },
   "variables": {
-    "logicAppName": "web-handler"
+    "logicAppName": "products-handler"
   },
   "resources": [
     {
-      "name": "web-handler",
+      "name": "[variables('logicAppName')]",
       "type": "Microsoft.Logic/workflows",
       "apiVersion": "2019-05-01",
       "location": "[parameters('location')]",
@@ -31,87 +31,32 @@
               "kind": "Http",
               "inputs": {
                 "schema": {
-                  "properties": {
-                    "address": {
-                      "properties": {
-                        "city": {
-                          "type": "string"
-                        },
-                        "country": {
-                          "type": "string"
-                        },
-                        "postalCode": {
-                          "type": "string"
-                        },
-                        "street": {
-                          "type": "string"
-                        }
-                      },
-                      "type": "object"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "string"
-                    }
-                  },
-                  "type": "object"
                 }
               }
             }
           },
           "actions": {
-            "Condition": {
-              "actions": {
-                "Response": {
-                  "runAfter": {
-                  },
-                  "type": "Response",
-                  "kind": "Http",
-                  "inputs": {
-                    "body": {
-                      "summary": "User validated succesfully"
-                    },
-                    "headers": {
-                      "X-UserValidation": "1"
-                    },
-                    "statusCode": 200
-                  }
-                }
-              },
+            "Response": {
               "runAfter": {
               },
-              "else": {
-                "actions": {
-                  "Response_2": {
-                    "runAfter": {
-                    },
-                    "type": "Response",
-                    "kind": "Http",
-                    "inputs": {
-                      "body": {
-                        "summary": "Validation failed"
-                      },
-                      "headers": {
-                        "X-UserValidation": "0"
-                      },
-                      "statusCode": 200
-                    }
-                  }
-                }
-              },
-              "expression": {
-                "and": [
+              "type": "Response",
+              "kind": "Http",
+              "inputs": {
+                "body": [
                   {
-                    "equals": [
-                      "@triggerBody()?['address']?['postalCode']",
-                      "12345"
-                    ]
+                    "id": 1,
+                    "name": "Product 1"
+                  },
+                  {
+                    "id": 2,
+                    "name": "Product 2"
                   }
-                ]
-              },
-              "type": "If"
+                ],
+                "headers": {
+                  "Content-type": "application/json"
+                },
+                "statusCode": 200
+              }
             }
           },
           "outputs": {
@@ -123,9 +68,13 @@
     }
   ],
   "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[variables('logicAppName')]"
+    },
     "logicApp": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Logic/workflows', 'web-handler')]"
+      "value": "[resourceId('Microsoft.Logic/workflows', variables('logicAppName'))]"
     },
     "sig": {
       "type": "string",
@@ -133,7 +82,18 @@
     },
     "endpoint": {
       "type": "string",
-      "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '/triggers/manual'), '2019-05-01').basePath]"
+      "value": "[concat(reference(resourceId('Microsoft.Logic/workflows', variables('logicAppName'))).accessEndpoint, '/triggers')]"
+    },
+    // To debug these good output values to 
+    // check in resource group deployment history 
+    // at the Azure Portal
+    "fullLogicAppObject": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '2019-05-01', 'Full')]"
+    },
+    "fullListCallbackURLObject": {
+      "type": "object",
+      "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', variables('logicAppName')), '/triggers/manual'), '2019-05-01')]"
     }
   }
 }
