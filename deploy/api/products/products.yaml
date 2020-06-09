@@ -15,7 +15,7 @@ components:
           type: string
 
 paths:
-  /products:
+  /:
     get:
       responses:
         "200":

@@ -32,6 +32,7 @@
     "apiPath": "users",
     "logicAppKeyName": "users-logic-app-sig",
     "logicAppBackendName": "usersLogicAppBackend",
+    "logicAppTemplate": "usersLogicAppBackendTemplate",
 
     "apiResourceName": "[concat(parameters('apimName'), '/', variables('apiName'))]",
     "apiResourceId": "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimName'), variables('apiName'))]",
@@ -41,7 +42,7 @@
   },
   "resources": [
     {
-      "name": "logicAppTemplate",
+      "name": "[variables('logicAppTemplate')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-10-01",
       "properties": {
@@ -63,7 +64,7 @@
       "properties": {
         "secret": true,
         "displayName": "[variables('logicAppKeyName')]",
-        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.sig.value]"
+        "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('logicAppTemplate'))).outputs.sig.value]"
       }
     },
     {
@@ -80,7 +81,7 @@
         ]
       },
       "dependsOn": [
-        "logicAppTemplate"
+        "[variables('logicAppTemplate')]"
       ]
     },
     {
@@ -88,13 +89,13 @@
       "type": "Microsoft.ApiManagement/service/backends",
       "apiVersion": "2019-01-01",
       "properties": {
-        "description": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.name.value]",
-        "resourceId": "[concat('https://management.azure.com',reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.logicApp.value)]",
-        "url": "[reference(resourceId('Microsoft.Resources/deployments', 'logicAppTemplate')).outputs.endpoint.value]",
+        "description": "[reference(resourceId('Microsoft.Resources/deployments', variables('logicAppTemplate'))).outputs.name.value]",
+        "resourceId": "[concat('https://management.azure.com',reference(resourceId('Microsoft.Resources/deployments', variables('logicAppTemplate'))).outputs.logicApp.value)]",
+        "url": "[reference(resourceId('Microsoft.Resources/deployments', variables('logicAppTemplate'))).outputs.endpoint.value]",
         "protocol": "http"
       },
       "dependsOn": [
-        "logicAppTemplate"
+        "[variables('logicAppTemplate')]"
       ]
     },
     {

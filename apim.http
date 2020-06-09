@@ -1,7 +1,7 @@
-@apim = https://[yourapiminstance].azure-api.net
+@apim = https://contosoapim3-local.azure-api.net
 
 ### Invalid user
-POST {{apim}}/user HTTP/1.1
+POST {{apim}}/users HTTP/1.1
 Content-type: application/json
 
 {
@@ -13,7 +13,7 @@ Content-type: application/json
 }
 
 ### Valid user
-POST {{apim}}/user HTTP/1.1
+POST {{apim}}/users HTTP/1.1
 Content-type: application/json
 
 {
@@ -23,3 +23,7 @@ Content-type: application/json
     "postalCode": "12345"
   }
 }
+
+### Get products
+GET {{apim}}/products HTTP/1.1
+Content-type: application/json
