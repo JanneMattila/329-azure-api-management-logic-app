@@ -18,7 +18,8 @@ Param (
     [string] $APIMName = "contosoapim3-local",
 
     [string] $Template = "azuredeploy.json",
-    [string] $TemplateParameters = "$PSScriptRoot\azuredeploy.parameters.json"
+    [string] $TemplateParameters = "$PSScriptRoot\azuredeploy.parameters.json",
+    [switch] $PreserveDeploymentContainer
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,11 +53,23 @@ if ($null -eq (Get-AzResourceGroup -Name $DeploymentResourceGroupName -Location 
 
 Set-AzCurrentStorageAccount -ResourceGroupName $DeploymentResourceGroupName -Name $DeploymentStorageName
 
-if ($null -eq (Get-AzStorageContainer -Name $DeploymentContainer -ErrorAction SilentlyContinue)) {
-    Write-Warning "Deployment storage container '$DeploymentContainer' doesn't exist and it will be created."
-    New-AzStorageContainer -Name $DeploymentContainer
+if ($null -ne (Get-AzStorageContainer -Name $DeploymentContainer -ErrorAction SilentlyContinue)) {
+    Write-Warning "Deployment storage container '$DeploymentContainer' exists and it will be removed."
+    Remove-AzStorageContainer -Name $DeploymentContainer -Force
+    Write-Host "Waiting for 30 seconds for the removal to finish."
+    Start-Sleep 30
 }
 
+$container = $null
+while ($null -eq $container) {
+    $container = New-AzStorageContainer -Name $DeploymentContainer -ErrorAction SilentlyContinue
+    if ($null -eq $container) {
+        Write-Host "Waiting deployment storage container to be removed. Waiting for 10 seconds."
+        Start-Sleep 10
+    }
+}
+
+$container
 $folder = "$PSScriptRoot\"
 Get-ChildItem -File -Recurse $folder -Exclude *.ps1 `
 | ForEach-Object { 
@@ -132,6 +145,10 @@ for ($i = 0; $i -lt 60; $i++) {
     }
 
     if ($running -eq 1) {
+        if (!$PreserveDeploymentContainer.IsPresent) {
+            Write-Host "After successful deployment removing the deployment storage container..."
+            Remove-AzStorageContainer -Name $DeploymentContainer -Force
+        }
         return
     }
 }
