@@ -16,6 +16,9 @@ Param (
 
     [Parameter(HelpMessage = "API Management Name")] 
     [string] $APIMName = "contosoapim3-local",
+    
+    [Parameter(HelpMessage = "Log Analytics workspace resource id if diagnostic settings is needed")] 
+    [string] $WorkspaceID = "",
 
     [string] $Template = "azuredeploy.json",
     [string] $TemplateParameters = "$PSScriptRoot\azuredeploy.parameters.json",
@@ -94,6 +97,8 @@ $additionalParameters = New-Object -TypeName hashtable
 $additionalParameters['apimName'] = $APIMName
 $additionalParameters['templateUrl'] = $templateUrl
 $additionalParameters['templateToken'] = ConvertTo-SecureString -String $templateToken -AsPlainText
+
+$additionalParameters['workspaceID'] = $WorkspaceID
 
 $result = New-AzResourceGroupDeployment `
     -DeploymentName $deploymentName `

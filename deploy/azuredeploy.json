@@ -24,6 +24,13 @@
         "description": "The name of the owner of the service"
       }
     },
+    "workspaceID": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Log Analytics workspace resource id if diagnostic settings is needed"
+      }
+    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -73,6 +80,35 @@
           ]
         }
       ]
+    },
+    {
+      /* 
+        Note: This requires "Developer" tier or higher.
+        This is conditionally deployed in case workspace id is provided.
+      */
+      "name": "[concat(parameters('apimName'),'/Microsoft.Insights/service')]",
+      "type": "Microsoft.ApiManagement/service/providers/diagnosticSettings",
+      "apiVersion": "2017-05-01-preview",
+      "condition": "[greater(length(parameters('workspaceId')), 0)]",
+      "dependsOn": [
+        "[concat('Microsoft.ApiManagement/service/', parameters('apimName'))]"
+      ],
+      "properties": {
+        "name": "diagnostics",
+        "workspaceId": "[parameters('workspaceId')]",
+        "logs": [
+          {
+            "category": "GatewayLogs",
+            "enabled": true
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true
+          }
+        ]
+      }
     },
     {
       "name": "apiUsersTemplate",
