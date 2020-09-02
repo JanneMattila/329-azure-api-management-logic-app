@@ -13,6 +13,14 @@ components:
           type: integer
         name:
           type: string
+        date1:
+          type: string
+          format: date
+          example: "2020-06-25"
+        date2:
+          type: string
+          format: date-time
+          example: "2020-07-25T12:34:56Z"
 
 paths:
   /:
